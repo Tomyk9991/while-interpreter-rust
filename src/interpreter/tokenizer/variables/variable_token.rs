@@ -1,31 +1,29 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
-use crate::interpreter::tokenizer::models::{AssignableToken, Stackable};
+use crate::interpreter::tokenizer::models::AssignableToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
-use crate::StringExtension;
 
-pub struct VariableToken<'a> {
-    pub name: NameToken<'a>,
-    pub assignment: AssignableToken<'a>
+#[derive(Clone)]
+pub struct VariableToken {
+    pub name: NameToken,
+    pub assignment: AssignableToken
 }
 
-impl<'a> Stackable for VariableToken<'a> {}
-
-impl Display for VariableToken<'_> {
+impl Display for VariableToken {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "Variable: {} = {}", self.name.value, self.assignment.evaluate())
     }
 }
 
-impl<'a> TreeViewElement for VariableToken<'a> {
+impl TreeViewElement for VariableToken {
     fn to_tree_view(&self) -> Vec<String> {
         vec![format!("Variable token: {{name: {}, Assignment: {}}}", self.name.value, self.assignment.to_tree_view()[0])]
     }
 }
 
-impl<'a> VariableToken<'a> {
+impl VariableToken {
     pub fn parse(code_line: &CodeLine) -> Option<VariableToken> {
         let segments = code_line.line.split(&[' ', ';'][..])
             .filter(|p| !p.is_empty())
@@ -40,7 +38,9 @@ impl<'a> VariableToken<'a> {
             return None;
         }
 
-        let assignment_token = AssignableToken::parse(&CodeLine::new_from_line(code_line.line.find_str(&segments[2..].join(""))));
+        let sub_string = &segments[2..].join("");
+
+        let assignment_token = AssignableToken::parse(&CodeLine::new_from_line(sub_string));
         if !code_line.line.ends_with(";") {
             pseudo_throw(format!("Expected ';' at end of line: {}", code_line.line));
             return None;

@@ -1,35 +1,37 @@
+use std::borrow::Borrow;
 use std::fmt::{Display, Formatter};
-use std::slice::Split;
-use regex::internal::Input;
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
-use crate::interpreter::tokenizer::models::{Stackable, Token};
-use crate::interpreter::utils::extension_methods::StringExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-pub struct MethodCallToken<'a> {
-    parameters: Vec<NameToken<'a>>,
-    name: NameToken<'a>,
+pub struct MethodCallToken {
+    parameters: Vec<NameToken>,
+    name: NameToken,
 }
 
-impl<'a> Stackable for MethodCallToken<'a> {
-
-}
-
-impl TreeViewElement for MethodCallToken<'_> {
-    fn to_tree_view(&self) -> Vec<String> {
-        vec![format!("{{Method call: {} parameters: {}}}", self.name, to_inline_string(&self.parameters))]
+impl Clone for MethodCallToken {
+    fn clone(&self) -> Self {
+        MethodCallToken {
+            parameters: self.parameters.clone(),
+            name: self.name.clone(),
+        }
     }
 }
 
-impl Display for MethodCallToken<'_> {
+impl TreeViewElement for MethodCallToken {
+    fn to_tree_view(&self) -> Vec<String> {
+        vec![format!("Method call: {}, parameters: {}", self.name.value, to_inline_string(&self.parameters))]
+    }
+}
+
+impl Display for MethodCallToken {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "Method Call Token: {}", self.name.value)
     }
 }
 
-impl<'a> MethodCallToken<'a> {
+impl MethodCallToken {
     pub fn evaluate(&self) -> u32 {
         0
     }
@@ -73,7 +75,7 @@ fn to_inline_string(parameters: &Vec<NameToken>) -> String {
     let last = parameters.last().unwrap();
 
     for parameter in parameters {
-        string.push_str(&format!("{},", parameter.to_tree_view()[0]));
+        string.push_str(&format!("{}", parameter.to_tree_view()[0]));
 
         if last != parameter {
             string.push_str(", ");
@@ -85,21 +87,21 @@ fn to_inline_string(parameters: &Vec<NameToken>) -> String {
 }
 
 
-fn parse_parameters<'a>(parameters: Vec<&str>, code_line: &'a CodeLine) -> Vec<NameToken<'a>> {
+fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Vec<NameToken> {
     let mut result = Vec::new();
 
     let len = parameters.len();
     let mut i = 0;
 
-    for parameter in parameters {
+    for parameter in parameters.borrow() as &[&str] {
         let ending_with_comma = parameter.ends_with(",");
 
         if i != len - 1 && !ending_with_comma {
-            pseudo_throw(format!("Expected a sequence as parameter at line: {}", code_line.line_number));
+            pseudo_throw(format!("Expected a sequence as parameter but got: {}", parameters.join("")));
+            return vec![];
         }
 
-
-        let name = code_line.line.find_str(&parameter.replace(",", "")).unwrap();
+        let name = &parameter.replace(",", "");
 
         let parameter = NameToken::parse(name);
         if let Some(value) = parameter {

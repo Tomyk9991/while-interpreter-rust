@@ -1,5 +1,3 @@
-use regex::internal::Input;
-
 pub trait StringExtension {
     fn find_str(&self, pat: &str) -> Option<&str>;
 }

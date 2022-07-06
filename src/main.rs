@@ -1,32 +1,39 @@
-use std::{env};
-
 use interpreter::read;
 use crate::interpreter::normalize;
-use crate::interpreter::utils::extension_methods::StringExtension;
+use crate::interpreter::tokenizer::scopes::TopLevelScope;
+use crate::interpreter::tokenizer::Tokenizer;
+use crate::interpreter::utils::env_args_parser;
 use crate::interpreter::utils::logging::Logger;
 
 mod interpreter;
 
 fn main() {
-    let path = check_for_input_source_code().unwrap_or_default();
-    let mut source_code = read(&path).unwrap();
-    source_code = normalize(&source_code);
+    let path = env_args_parser::get_suffix_from_prefix(&["-i", "i"][..]);
+    let logger_statement = env_args_parser::get_suffix_from_prefix(&["-log", "log"][..]).unwrap_or("np".to_string());
 
-    let logger: Logger = Logger::NoLogger;
-    // let tokenizer = Tokenizer::new(logger);
-}
 
-fn check_for_input_source_code() -> Option<String> {
-    let args: Vec<String> = env::args().collect();
-
-    for arg in args.iter().skip(1) {
-        let split: Vec<&str> = arg.split(&['-', ' '][..]).filter(|p| !p.is_empty()).collect();
-
-        
-        if split.len() == 2 && (split[0] == "i" || split[0] == "-i"){
-            return Some(split[1].to_string());
-        }
+    if path.is_none() {
+        println!("No source file provided. Consider using --i example.while");
+        return;
     }
 
-    return None;
+
+    let logger: Logger = match logger_statement.to_lowercase().as_ref() {
+        "nolog" => Logger::NoLogger,
+        "log" => Logger::StdLogger,
+        "np" => {
+            println!("Logging argument not provided. Using default: nolog");
+            Logger::NoLogger
+        },
+        _ => { Logger::NoLogger }
+    };
+
+
+    let mut source_code = read(&(path.unwrap())).unwrap();
+    source_code = normalize(&source_code);
+
+
+    let tokenizer = Tokenizer::new(logger);
+    let _scope: TopLevelScope = tokenizer.tokenize(source_code);
+    println!("finished");
 }

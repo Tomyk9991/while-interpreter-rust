@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 use regex::Regex;
-use crate::interpreter::tokenizer::models::AssignableToken;
 use crate::interpreter::utils::logging::TreeViewElement;
 
+#[derive(Clone)]
 pub struct DigitToken {
     value: u32
 }

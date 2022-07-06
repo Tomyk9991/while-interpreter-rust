@@ -2,22 +2,17 @@ use std::fmt::{Debug, Formatter};
 use std::ops::{Add, Sub};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
-use enum_variant_type::EnumVariantType;
 use crate::interpreter::tokenizer::methods::MethodCallToken;
-use crate::interpreter::tokenizer::variables::VariableToken;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-pub trait Stackable {
-
-}
-
-pub enum AssignableToken<'a> {
-    Name { value: NameToken<'a> },
+#[derive(Clone)]
+pub enum AssignableToken {
+    Name { value: NameToken },
     Digit { value: DigitToken },
-    MethodCall { value: MethodCallToken<'a> }
+    MethodCall { value: MethodCallToken },
 }
 
-impl<'a> Add for AssignableToken<'a> {
+impl Add for AssignableToken {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -26,7 +21,7 @@ impl<'a> Add for AssignableToken<'a> {
     }
 }
 
-impl<'a> Sub for AssignableToken<'a> {
+impl Sub for AssignableToken {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
@@ -35,17 +30,17 @@ impl<'a> Sub for AssignableToken<'a> {
     }
 }
 
-impl<'a> Debug for AssignableToken<'a> {
+impl Debug for AssignableToken {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             AssignableToken::Name { value } => write!(f, "{}", value),
-            AssignableToken::Digit { value} => write!(f, "{}", value),
+            AssignableToken::Digit { value } => write!(f, "{}", value),
             AssignableToken::MethodCall { value } => write!(f, "{}", value)
         }
     }
 }
 
-impl<'a> TreeViewElement for AssignableToken<'a> {
+impl TreeViewElement for AssignableToken {
     fn to_tree_view(&self) -> Vec<String> {
         match self {
             AssignableToken::Name { value } => value.to_tree_view(),
@@ -55,7 +50,7 @@ impl<'a> TreeViewElement for AssignableToken<'a> {
     }
 }
 
-impl<'a> AssignableToken<'a> {
+impl AssignableToken {
     pub fn evaluate(&self) -> u32 {
         match self {
             AssignableToken::Name { value } => {
@@ -70,7 +65,7 @@ impl<'a> AssignableToken<'a> {
         }
     }
 
-    pub fn parse(code_line: &'a CodeLine) -> Option<Self> {
+    pub fn parse(code_line: &CodeLine) -> Option<Self> {
         let name_assignment_token = NameToken::parse(&code_line.line);
         if let Some(value) = name_assignment_token {
             return Some(AssignableToken::Name { value });
@@ -90,42 +85,6 @@ impl<'a> AssignableToken<'a> {
             None => {
                 None
             }
-        }
-    }
-}
-
-pub enum Token<'a> {
-    Variable { value : VariableToken<'a> },
-    MethodCall { value: MethodCallToken<'a> },
-}
-
-impl<'a> Token<'a> {
-    pub fn ends_with_semicolon(&self, phrase: &str) -> bool {
-        phrase.ends_with(';')
-    }
-
-    pub fn parse(&self, line: &'a CodeLine) -> Option<Token> {
-        match self {
-            Token::Variable { value } => {
-                match VariableToken::parse(line) {
-                    None => { None }
-                    Some(v) => {
-                        Some(Token::Variable {
-                            value: v
-                        })
-                    }
-                }
-            }
-            Token::MethodCall { value } => {
-                match MethodCallToken::parse(line) {
-                    None => { None }
-                    Some(v) => {
-                        Some(Token::MethodCall {
-                            value: v
-                        })
-                    }
-                }
-            }
-        }
+        };
     }
 }
