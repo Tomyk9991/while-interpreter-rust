@@ -5,3 +5,4 @@ mod return_token;
 mod type_token;
 
 pub use method_call_token::MethodCallToken;
+pub use method_header_token::MethodHeaderToken;

@@ -2,6 +2,7 @@ use std::borrow::Borrow;
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
+use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
@@ -21,7 +22,7 @@ impl Clone for MethodCallToken {
 
 impl TreeViewElement for MethodCallToken {
     fn to_tree_view(&self) -> Vec<String> {
-        vec![format!("Method call: {}, parameters: {}", self.name.value, to_inline_string(&self.parameters))]
+        vec![format!("Method call: {}, parameters: {}", self.name.value, &self.parameters.to_inline_string())]
     }
 }
 
@@ -64,26 +65,6 @@ impl MethodCallToken {
             parameters
         });
     }
-}
-
-fn to_inline_string(parameters: &Vec<NameToken>) -> String {
-    if parameters.is_empty() {
-        return String::from("[]");
-    }
-
-    let mut string = String::from("[");
-    let last = parameters.last().unwrap();
-
-    for parameter in parameters {
-        string.push_str(&format!("{}", parameter.to_tree_view()[0]));
-
-        if last != parameter {
-            string.push_str(", ");
-        }
-    }
-
-    string.push_str("]");
-    return string;
 }
 
 
