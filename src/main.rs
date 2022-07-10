@@ -35,5 +35,4 @@ fn main() {
 
     let tokenizer = Tokenizer::new(logger);
     let _scope: TopLevelScope = tokenizer.tokenize(source_code);
-    println!("finished");
 }

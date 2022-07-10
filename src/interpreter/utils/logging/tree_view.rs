@@ -9,6 +9,9 @@ impl TreeViewElement for Stackable {
         match self {
             Stackable::MethodCallToken { value } => value.to_tree_view(),
             Stackable::VariableToken { value } => value.to_tree_view(),
+            Stackable::WhileToken { value } => value.to_tree_view(),
+            Stackable::ReturnToken { value } => { value.to_tree_view() }
+            Stackable::AdditiveOperatorToken { value } => { value.to_tree_view() }
         }
     }
 }

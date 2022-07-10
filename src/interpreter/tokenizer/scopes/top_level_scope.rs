@@ -1,18 +1,21 @@
 use crate::interpreter::models::CodeLine;
+use crate::interpreter::tokenizer::methods::MethodToken;
 use crate::interpreter::tokenizer::models::{Stackable, Token};
 use crate::interpreter::utils::logging::TreeViewElement;
 use crate::Logger;
 
 pub struct TopLevelScope {
     logger: Logger,
-    pub stack: Vec<Stackable>
+    pub stack: Vec<Stackable>,
+    pub methods: Vec<MethodToken>
 }
 
 impl TopLevelScope {
     pub fn new(logger: Logger) -> TopLevelScope {
         TopLevelScope {
             logger,
-            stack: Vec::new()
+            stack: Vec::new(),
+            methods: Vec::new()
         }
     }
 
@@ -36,6 +39,14 @@ impl TreeViewElement for TopLevelScope {
         ];
 
         // todo methods
+        for method in &self.methods {
+            let method_lines = method.to_tree_view();
+            lines.push(format!("│  ├── Method token: {}", method.header_token.name.value.to_uppercase()));
+
+            for method_line in method_lines {
+                lines.push(format!("│  │  {}", method_line));
+            }
+        }
 
         lines.push("├── Scope:".to_string());
         for stackable in &self.stack {

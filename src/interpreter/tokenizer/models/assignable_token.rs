@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, Sub};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
@@ -10,6 +10,16 @@ pub enum AssignableToken {
     Name { value: NameToken },
     Digit { value: DigitToken },
     MethodCall { value: MethodCallToken },
+}
+
+impl Display for AssignableToken {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            AssignableToken::Name { value } => write!(f, "{}", value),
+            AssignableToken::Digit { value } => write!(f, "{}", value),
+            AssignableToken::MethodCall { value } => write!(f, "{}", value),
+        }
+    }
 }
 
 impl Add for AssignableToken {

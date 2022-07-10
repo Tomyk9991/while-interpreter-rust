@@ -1,5 +1,6 @@
 use std::fmt::{Debug, Display, Formatter};
 
+#[derive(Clone)]
 pub struct CodeLine {
     pub line: String,
     pub line_number: u32
