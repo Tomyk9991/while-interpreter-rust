@@ -5,7 +5,7 @@ use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
 use crate::interpreter::tokenizer::methods::MethodCallToken;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum AssignableToken {
     Name { value: NameToken },
     Digit { value: DigitToken },

@@ -3,19 +3,19 @@ use crate::interpreter::normalize;
 use crate::interpreter::tokenizer::scopes::TopLevelScope;
 use crate::interpreter::tokenizer::Tokenizer;
 use crate::interpreter::utils::env_args_parser;
+use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::Logger;
 
 mod interpreter;
 
 fn main() {
-    let path = env_args_parser::get_suffix_from_prefix(&["-i", "i"][..]);
+    let path = env_args_parser::get_suffix_from_prefix(&["-i", "i"][..]).unwrap_or_else(||{
+        pseudo_throw("No source file provided. Consider using --i example.while".to_string());
+        return String::from("");
+    });
+
     let logger_statement = env_args_parser::get_suffix_from_prefix(&["-log", "log"][..]).unwrap_or("np".to_string());
 
-
-    if path.is_none() {
-        println!("No source file provided. Consider using --i example.while");
-        return;
-    }
 
 
     let logger: Logger = match logger_statement.to_lowercase().as_ref() {
@@ -29,7 +29,7 @@ fn main() {
     };
 
 
-    let mut source_code = read(&(path.unwrap())).unwrap();
+    let mut source_code = read(&(path)).unwrap();
     source_code = normalize(&source_code);
 
 

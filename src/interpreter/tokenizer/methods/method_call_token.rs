@@ -2,13 +2,15 @@ use std::borrow::Borrow;
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
+use crate::interpreter::tokenizer::models::AssignableToken;
 use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
+#[derive(PartialEq)]
 pub struct MethodCallToken {
-    parameters: Vec<NameToken>,
-    name: NameToken,
+    pub parameters: Vec<AssignableToken>,
+    pub name: NameToken,
 }
 
 impl Clone for MethodCallToken {
@@ -28,7 +30,7 @@ impl TreeViewElement for MethodCallToken {
 
 impl Display for MethodCallToken {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Method Call Token: {}", self.name.value)
+        write!(f, "Method Call Token: {}, Parameters: {}", self.name.value, &self.parameters.to_inline_string())
     }
 }
 
@@ -38,10 +40,6 @@ impl MethodCallToken {
     }
 
     pub fn parse(code_line: &CodeLine) -> Option<MethodCallToken> {
-        let split = code_line.line.split(&[' ', ':', '(', ')'][..])
-            .filter(|p| !p.is_empty() && !p.trim().is_empty())
-            .collect::<Vec<&str>>();
-
         if !code_line.line.contains("(") || !code_line.line.contains(")") {
             return None;
         }
@@ -50,14 +48,31 @@ impl MethodCallToken {
             return None;
         }
 
-        let name_token = NameToken::parse(split[0]);
+        let first_bracket = code_line.line.find('(');
+        let last_bracket = code_line.line.rfind(')');
+
+        if first_bracket.is_none() || last_bracket.is_none() {
+            return None;
+        }
+
+        let first_bracket = first_bracket.unwrap();
+        let last_bracket = last_bracket.unwrap();
+
+        let parameter_str: &str = &code_line.line[first_bracket + 1..last_bracket];
+        let name_str = &code_line.line[0..first_bracket];
+
+        let name_token = NameToken::parse(name_str);
         if let None = name_token {
             return None;
         }
 
         let mut parameters = Vec::new();
-        if split.len() > 1 {
-            parameters = parse_parameters(split[1].replace(",", ",#").split("#").collect(), code_line);
+        if parameter_str.trim().len() > 0 {
+            parameters = parse_p(parameter_str);
+
+            if parameters.len() == 0 {
+                return None;
+            }
         }
 
         return Some(MethodCallToken {
@@ -67,15 +82,64 @@ impl MethodCallToken {
     }
 }
 
+fn parse_p(parameter_string: &str) -> Vec<AssignableToken> {
+    let mut parameters: Vec<AssignableToken> = Vec::new();
 
-fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Vec<NameToken> {
+    let mut individual_parameters: Vec<&str> = Vec::new();
+    let mut counter = 0;
+    let mut current_start_index = 0;
+
+    for (index, c) in parameter_string.chars().enumerate() {
+        match c {
+            '(' => counter += 1,
+            ')' => counter -= 1,
+            ',' => {
+                if counter == 0 {
+                    let value = &parameter_string[current_start_index..index].trim();
+
+                    if value.is_empty() {
+                        pseudo_throw("Parameter can't be empty".to_string());
+                        return vec![];
+                    }
+
+                    individual_parameters.push(value);
+                    current_start_index = index + 1;
+                }
+            }
+            _ => { }
+        }
+    }
+
+    if counter != 0 {
+        pseudo_throw("Expected ')' at method call".to_string());
+        return vec![];
+    }
+
+    individual_parameters.push(&parameter_string[current_start_index..parameter_string.len()].trim());
+
+    for para in individual_parameters {
+        let assignable = AssignableToken::parse(&CodeLine::new_from_line(para));
+
+        if assignable.is_some() {
+            parameters.push(assignable.unwrap());
+        }
+    }
+
+
+    return parameters;
+}
+
+
+fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Vec<AssignableToken> {
     let mut result = Vec::new();
 
     let len = parameters.len();
     let mut i = 0;
 
-    for parameter in parameters.borrow() as &[&str] {
+    for parameter in parameters.borrow() as &Vec<&str> {
         let ending_with_comma = parameter.ends_with(",");
+
+        println!("parameter[{i}] = '{parameter}'");
 
         if i != len - 1 && !ending_with_comma {
             pseudo_throw(format!("Expected a sequence as parameter but got: {}", parameters.join("")));
@@ -84,11 +148,12 @@ fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Vec<NameToke
 
         let name = &parameter.replace(",", "");
 
-        let parameter = NameToken::parse(name);
+        let parameter = AssignableToken::parse(&CodeLine::new_from_line(name));
         if let Some(value) = parameter {
             result.push(value);
         } else {
             pseudo_throw(format!("Expected a name for the parameter at line: {}", code_line.line_number));
+            return vec![];
         }
 
         i += 1;

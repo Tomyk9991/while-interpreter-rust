@@ -5,7 +5,7 @@ use crate::interpreter::tokenizer::models::Stackable;
 use crate::interpreter::tokenizer::scopes::TopLevelScope;
 use crate::interpreter::tokenizer::while_tokens::WhileToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
-use crate::Logger;
+use crate::interpreter::utils::logging::Logger;
 
 pub struct Tokenizer {
     logger: Logger

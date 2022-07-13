@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 use regex::Regex;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct DigitToken {
     value: u32
 }

@@ -1,8 +1,7 @@
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::methods::MethodToken;
 use crate::interpreter::tokenizer::models::{Stackable, Token};
-use crate::interpreter::utils::logging::TreeViewElement;
-use crate::Logger;
+use crate::interpreter::utils::logging::{Logger, TreeViewElement};
 
 pub struct TopLevelScope {
     logger: Logger,
