@@ -1,6 +1,7 @@
 ## Grammar rules
 Where S is the starting non terminal, regular expressions are terminals
 
+
 |Non terminals| Non terminals + Terminals                                |
 |-------------|----------------------------------------------------------|
 | S           | (INNERSCOPE* or METHOD*)+                                |
@@ -9,6 +10,7 @@ Where S is the starting non terminal, regular expressions are terminals
 | DECREMENT   | NAME -= ASSIGNMENT;                                      |
 | NAME        | [a-zA-Z][a-zA-Z0-9]*                                     |
 | DIGIT       | [0-9]+                                                   |
+| TYPE        | num or void                                              |
 | ASSIGNMENT  | NAME or DIGIT or METHOD-CALL                             |
 | WHILE       | while NAME != 0: INNERSCOPE#                             |
 | METHOD      | METHOD-HEAD INNERSCOPE return (ASSIGNTMENT or ε);        |
