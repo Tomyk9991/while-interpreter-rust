@@ -12,7 +12,7 @@ Where S is the starting non terminal, regular expressions are terminals
 | ASSIGNMENT  | NAME or DIGIT or METHOD-CALL                             |
 | WHILE       | while NAME != 0: INNERSCOPE#                             |
 | METHOD      | METHOD-HEAD INNERSCOPE return (ASSIGNTMENT or ε);        |
-| METHOD-HEAD | TYPE NAME(ASSIGNTMENT or (ASSIGNMENT,)+ ASSIGNMENT or ε):|
+| METHOD-HEAD | TYPE NAME(NAME or (NAME,)+ NAME or ε):                   |
 | METHOD-CALL | NAME(ASSIGNTMENT or (ASSIGNMENT,)+ ASSIGNMENT or ε);     |
 | INNERSCOPE  | (VARIABLE* or METHOD-CALL* or WHILE*)+                   |
 
