@@ -5,7 +5,7 @@ use crate::interpreter::tokenizer::scopes::InnerBodyScope;
 use crate::interpreter::tokenizer::while_tokens::WhileHeaderToken;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct WhileToken {
     pub header_token: WhileHeaderToken,
     pub scope: Option<InnerBodyScope>,

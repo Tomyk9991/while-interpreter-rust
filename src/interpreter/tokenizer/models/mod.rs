@@ -9,7 +9,7 @@ use crate::interpreter::tokenizer::operators::AdditiveOperatorToken;
 use crate::interpreter::tokenizer::variables::VariableToken;
 use crate::interpreter::tokenizer::while_tokens::WhileToken;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Stackable {
     MethodCallToken { value: MethodCallToken },
     VariableToken { value: VariableToken },

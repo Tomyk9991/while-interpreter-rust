@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum TypeToken {
     Void = 0,
     Num = 1,

@@ -5,7 +5,7 @@ use crate::interpreter::tokenizer::models::AssignableToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct VariableToken {
     pub name: NameToken,
     pub assignment: AssignableToken

@@ -6,10 +6,10 @@ use crate::interpreter::tokenizer::models::AssignableToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ReturnToken {
     pub return_value: Option<AssignableToken>,
-    header: Option<MethodHeaderToken>
+    pub header: Option<MethodHeaderToken>
 }
 
 impl Display for ReturnToken {

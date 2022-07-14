@@ -1,5 +1,5 @@
 use while_interpreter::interpreter::models::CodeLine;
-use while_interpreter::interpreter::tokenizer::assignables::NameToken;
+use while_interpreter::interpreter::tokenizer::assignables::{DigitToken, NameToken};
 use while_interpreter::interpreter::tokenizer::methods::MethodCallToken;
 
 #[test]
@@ -28,6 +28,7 @@ fn method_call_token() {
         ("add(1, 3)", true),
         ("add(a, b)", true),
         ("add()", true),
+        ("add(add(add(add(add(add(add(add(add(add(add(add(1))))))))))))", true),
         ("subtract(5, 5, ,2, 5, 3, 123)", false),
         ("subtract(5, 5, a,2, 5, 3, 123)", true),
         ("subtract(substract(subtract(3, 2), substract(3, 1)), a)", true),
@@ -44,5 +45,26 @@ fn method_call_token() {
     for pair in string_result_pair {
         let token = MethodCallToken::parse(&CodeLine::new_from_line(pair.0));
         assert_eq!(pair.1, token.is_some())
+    }
+}
+
+#[test]
+fn digit_token() {
+    let tests = [
+        ("5", true),
+        ("a5232a", false),
+        ("5a", false),
+        ("^^a", false),
+        ("while", false),
+        ("5.5", false),
+        ("5.5.5", false),
+        ("-1", false),
+        ("14", true),
+        ("1231251", true),
+    ];
+
+    for test in tests {
+        let token = DigitToken::parse(test.0);
+        assert_eq!(test.1, token.is_some());
     }
 }

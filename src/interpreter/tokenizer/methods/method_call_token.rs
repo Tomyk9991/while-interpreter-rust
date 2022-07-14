@@ -1,4 +1,3 @@
-use std::borrow::Borrow;
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
@@ -7,7 +6,7 @@ use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub struct MethodCallToken {
     pub parameters: Vec<AssignableToken>,
     pub name: NameToken,
@@ -84,7 +83,6 @@ impl MethodCallToken {
 
 fn parse_p(parameter_string: &str) -> Vec<AssignableToken> {
     let mut parameters: Vec<AssignableToken> = Vec::new();
-
     let mut individual_parameters: Vec<&str> = Vec::new();
     let mut counter = 0;
     let mut current_start_index = 0;
@@ -127,37 +125,4 @@ fn parse_p(parameter_string: &str) -> Vec<AssignableToken> {
 
 
     return parameters;
-}
-
-
-fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Vec<AssignableToken> {
-    let mut result = Vec::new();
-
-    let len = parameters.len();
-    let mut i = 0;
-
-    for parameter in parameters.borrow() as &Vec<&str> {
-        let ending_with_comma = parameter.ends_with(",");
-
-        println!("parameter[{i}] = '{parameter}'");
-
-        if i != len - 1 && !ending_with_comma {
-            pseudo_throw(format!("Expected a sequence as parameter but got: {}", parameters.join("")));
-            return vec![];
-        }
-
-        let name = &parameter.replace(",", "");
-
-        let parameter = AssignableToken::parse(&CodeLine::new_from_line(name));
-        if let Some(value) = parameter {
-            result.push(value);
-        } else {
-            pseudo_throw(format!("Expected a name for the parameter at line: {}", code_line.line_number));
-            return vec![];
-        }
-
-        i += 1;
-    }
-
-    return result;
 }

@@ -4,7 +4,7 @@ use crate::interpreter::tokenizer::assignables::NameToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct WhileHeaderToken {
     // x != 0
     // The while language only can use x != 0, so no need for real boolean algebra

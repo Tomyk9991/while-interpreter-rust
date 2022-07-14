@@ -3,7 +3,7 @@ use regex::Regex;
 use crate::interpreter::constants::KEYWORDS;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NameToken {
     pub value: String
 }

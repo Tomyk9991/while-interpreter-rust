@@ -6,7 +6,7 @@ use crate::interpreter::tokenizer::variables::VariableToken;
 use crate::interpreter::tokenizer::while_tokens::{WhileEscapeToken, WhileHeaderToken, WhileToken};
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct InnerBodyScope {
     pub stack: Vec<Stackable>,
     pub last_visited: i32,

@@ -6,7 +6,7 @@ use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MethodHeaderToken {
     pub name: NameToken,
     pub parameters: Vec<NameToken>,
@@ -99,6 +99,7 @@ fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Option<Vec<N
             p.push(value);
         } else {
             pseudo_throw(format!("Expected a name for the parameter at line: {}", code_line.line_number));
+            return None;
         }
 
         i += 1;

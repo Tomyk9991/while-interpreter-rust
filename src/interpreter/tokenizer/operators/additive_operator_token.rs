@@ -5,7 +5,7 @@ use crate::interpreter::tokenizer::models::AssignableToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Operator {
     Add,
     Sub,
@@ -22,7 +22,7 @@ impl Display for Operator {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct AdditiveOperatorToken {
     pub name: NameToken,
     pub operator: Operator,
