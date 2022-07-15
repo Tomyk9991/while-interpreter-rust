@@ -1,6 +1,7 @@
 use std::fmt::{Display, Formatter};
 use regex::Regex;
 use crate::interpreter::constants::KEYWORDS;
+use crate::interpreter::executor_states::RunTime;
 use crate::interpreter::utils::logging::TreeViewElement;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -28,7 +29,7 @@ impl NameToken {
     }
 
     pub fn evaluate(&self) -> u32 {
-        return 0;
+        return RunTime::get_value_from_current_name(&self.value);
     }
 
     pub fn parse(line: &str) -> Option<Self> {

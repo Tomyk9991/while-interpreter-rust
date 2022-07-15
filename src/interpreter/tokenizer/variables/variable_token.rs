@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use std::ops::AddAssign;
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
 use crate::interpreter::tokenizer::models::AssignableToken;
@@ -24,6 +25,14 @@ impl TreeViewElement for VariableToken {
 }
 
 impl VariableToken {
+    pub fn get_assignable_mut(&mut self) -> &mut AssignableToken {
+        &mut self.assignment
+    }
+
+    pub fn set_assignable_token(&mut self, assignable_token: AssignableToken) {
+        self.assignment = assignable_token;
+    }
+
     pub fn parse(code_line: &CodeLine) -> Option<VariableToken> {
         let segments = code_line.line.split(&[' ', ';'][..])
             .filter(|p| !p.is_empty())

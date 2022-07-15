@@ -1,5 +1,5 @@
 use std::fmt::{Debug, Display, Formatter};
-use std::ops::{Add, Sub};
+use std::ops::{Add, AddAssign, Deref, DerefMut, Sub, SubAssign};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
 use crate::interpreter::tokenizer::methods::MethodCallToken;
@@ -18,6 +18,22 @@ impl Display for AssignableToken {
             AssignableToken::Name { value } => write!(f, "{}", value),
             AssignableToken::Digit { value } => write!(f, "{}", value),
             AssignableToken::MethodCall { value } => write!(f, "{}", value),
+        }
+    }
+}
+
+impl AddAssign for AssignableToken {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = AssignableToken::Digit {
+            value: DigitToken::new(self.evaluate() + rhs.evaluate())
+        }
+    }
+}
+
+impl SubAssign for AssignableToken {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = AssignableToken::Digit {
+            value: DigitToken::new(self.evaluate() - rhs.evaluate())
         }
     }
 }
@@ -61,7 +77,7 @@ impl TreeViewElement for AssignableToken {
 }
 
 impl AssignableToken {
-    pub fn evaluate(&self) -> u32 {
+    pub fn evaluate(&self, ) -> u32 {
         match self {
             AssignableToken::Name { value } => {
                 value.evaluate()
@@ -96,5 +112,17 @@ impl AssignableToken {
                 None
             }
         };
+    }
+
+    pub fn add_assign(&mut self, rhs: Self) {
+        *self = AssignableToken::Digit {
+            value: DigitToken::new(self.evaluate() + rhs.evaluate())
+        }
+    }
+
+    pub fn sub_assign(&mut self, rhs: Self) {
+        *self = AssignableToken::Digit {
+            value: DigitToken::new(self.evaluate() + rhs.evaluate())
+        }
     }
 }
