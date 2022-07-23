@@ -1,7 +1,9 @@
 use std::fmt::{Display, Formatter};
+use crate::interpreter::executor_states::RunTime;
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::assignables::NameToken;
+use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
 use crate::interpreter::tokenizer::models::AssignableToken;
+use crate::interpreter::tokenizer::variables::VariableToken;
 use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
@@ -35,7 +37,32 @@ impl Display for MethodCallToken {
 
 impl MethodCallToken {
     pub fn evaluate(&self) -> u32 {
-        0
+        // build parameter variables
+        // in a method call, the indent level is 1. so we need to add 1 to the indent level.
+        let method_token = RunTime::get_method_token(&self.name.value);
+
+
+        return if let Some(method_token) = method_token {
+            let mut parameters: Vec<VariableToken> = Vec::new();
+
+            for (i, assignable) in self.parameters.iter().enumerate() {
+                parameters.push(VariableToken::new(
+                    method_token.header_token.parameters[i].clone(),
+                    AssignableToken::Digit {
+                        value: DigitToken::new(assignable.evaluate()),
+                    },
+                ))
+            }
+
+            RunTime::push_parameter_variables(parameters);
+            let value = RunTime::get_value_from_method_name(&self.name.value);
+            RunTime::pop_variables();
+
+            value
+        } else {
+            pseudo_throw(format!("Method not found"));
+            0
+        }
     }
 
     pub fn parse(code_line: &CodeLine) -> Option<MethodCallToken> {

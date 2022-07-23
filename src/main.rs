@@ -41,6 +41,6 @@ fn main() {
         return;
     }
 
-    let run_time = RunTime::new(scope, logger.clone());
+    let mut run_time = RunTime::new(scope, logger.clone());
     run_time.run();
 }

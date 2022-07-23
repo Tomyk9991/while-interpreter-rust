@@ -25,6 +25,6 @@ while a != 0:
 #
 
 y += x;
-z = add(x, y);
+z = Add(x, y);
 
 WriteLine(z);

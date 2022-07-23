@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use crate::interpreter::models::CodeLine;
+use crate::interpreter::models::{BodyExecutor, CodeLine};
 use crate::interpreter::tokenizer::methods::MethodHeaderToken;
 use crate::interpreter::tokenizer::models::Token;
 use crate::interpreter::tokenizer::scopes::InnerBodyScope;
@@ -14,6 +14,16 @@ pub struct MethodToken {
     code_lines: Vec<CodeLine>,
     start_index: usize,
     last_visited_line: i32
+}
+
+impl MethodToken {
+    pub fn execute(&self) -> u32 {
+        let body_executor = BodyExecutor {
+            scope: self.scope.stack.clone()
+        };
+
+        body_executor.execute().unwrap_or(0)
+    }
 }
 
 impl Display for MethodToken {

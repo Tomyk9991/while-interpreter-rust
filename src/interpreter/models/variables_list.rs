@@ -1,43 +1,53 @@
 use std::fmt::{Display, Formatter};
-use std::ops::Deref;
-use crate::interpreter::tokenizer::assignables::DigitToken;
-use crate::interpreter::tokenizer::models::AssignableToken;
-use crate::interpreter::tokenizer::models::AssignableToken::Digit;
+use std::slice::Iter;
 use crate::interpreter::tokenizer::operators::{AdditiveOperatorToken, Operator};
 use crate::interpreter::tokenizer::variables::VariableToken;
 use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 
 pub struct VariablesList {
-    tokens: Vec<VariableToken>
+    //Represents a Variable, indent-level pair
+    tokens: Vec<(VariableToken, u32)>,
+    pub current_indent_level: u32,
 }
 
 impl VariablesList {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         VariablesList {
-            tokens: Vec::new()
+            tokens: Vec::new(),
+            current_indent_level: 0,
         }
     }
 
     pub fn add_or_update(&mut self, token: VariableToken) -> bool {
-        let found_value = self.tokens.iter_mut().find(|x| x.name.value == token.name.value);
-        if found_value.is_none() {
-            self.tokens.push(token);
-            return true;
+        // there is a problem, when the name of a parameter is the same as a already defined variable.
+        // in this case a new variable is created, but the old one is not updated.
+        // Design the language, so variables from other scopes are not even visible.
+        // You can only manipulate the variables in the current scope, and the variables that were passed a parameter.
+
+        let mut found_value = self.tokens.iter_mut().find(|(variable, indent_level)| {
+            variable.name.value == token.name.value && *indent_level == self.current_indent_level
+        });
+
+        return if let Some((ref mut var, ref mut indent)) = found_value {
+            var.set_assignable_token(token.assignment);
+            false
+        } else {
+            self.tokens.push((token, self.current_indent_level));
+            true
         }
-
-        found_value.unwrap().set_assignable_token(token.assignment);
-
-        return false;
     }
 
     pub fn update(&mut self, operator_token: AdditiveOperatorToken) {
-        let variable_token = self.tokens.iter_mut().find(|x| x.name.value == operator_token.name.value);
-        if variable_token.is_none() {
+        let tuple = self.tokens.iter_mut().find(|(variable, indent)| {
+            variable.name.value == operator_token.name.value && *indent == self.current_indent_level
+        });
+
+        if tuple.is_none() {
             pseudo_throw(format!("You can't operate on a non existent variable: {}", operator_token.name.value));
         }
-        
-        let mut variable_token = variable_token.unwrap();
+
+        let (variable_token, indent) = tuple.unwrap();
 
         match operator_token.operator {
             Operator::Add => variable_token.get_assignable_mut().add_assign(operator_token.rhs_operand),
@@ -46,22 +56,34 @@ impl VariablesList {
         }
     }
 
-    pub fn find<P>(&self, predicate: P) -> Option<&VariableToken> where P : Fn(&VariableToken) -> bool {
-        for token in &self.tokens {
-            let result = predicate(token);
+    pub fn pop_variables(&mut self) {
+        // variables getting popped with the same indent level as the current indent level.
+
+
+        for i in (0..self.tokens.len()).rev() {
+            if self.tokens[i].1 == self.current_indent_level {
+                self.tokens.remove(i);
+            }
+        }
+    }
+
+    pub fn find<P>(&self, predicate: P) -> Option<(&VariableToken, &u32)> where P: Fn((&VariableToken, &u32)) -> bool {
+        for (variable_token, indent_level) in &self.tokens {
+            let result = predicate((variable_token, indent_level));
             if result {
-                return Some(token)
+                return Some((variable_token, indent_level));
             }
         }
 
         None
     }
 
-    pub fn find_mut<P>(&mut self, mut predicate: P) -> Option<&mut VariableToken> where P : FnMut(&mut VariableToken) -> bool {
-        for token in self.tokens.iter_mut() {
-            let result = predicate(token);
+    #[allow(dead_code)]
+    pub fn find_mut<P>(&mut self, mut predicate: P) -> Option<&mut VariableToken> where P: FnMut(&mut VariableToken) -> bool {
+        for (variable_token, indent_level) in self.tokens.iter_mut() {
+            let result = predicate(variable_token);
             if result {
-                return Some(token)
+                return Some(variable_token);
             }
         }
 
@@ -71,6 +93,6 @@ impl VariablesList {
 
 impl Display for VariablesList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.tokens.to_multi_line_string())
+        write!(f, "{}", self.tokens.iter().map(|tuple| tuple.0.clone()).collect::<Vec<VariableToken>>().to_multi_line_string())
     }
 }

@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use std::ops::AddAssign;
+use crate::interpreter::executor_states::RunTime;
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::NameToken;
 use crate::interpreter::tokenizer::models::AssignableToken;
@@ -20,7 +20,11 @@ impl Display for VariableToken {
 
 impl TreeViewElement for VariableToken {
     fn to_tree_view(&self) -> Vec<String> {
-        vec![format!("Variable token: {{name: {}, Assignment: {}}}", self.name.value, self.assignment.to_tree_view()[0])]
+        if RunTime::initialized() {
+            vec![format!("Variable token: {{name: {} = {}\tAssignment: {}}}", self.name.value, self.assignment.evaluate(), self.assignment.to_tree_view()[0])]
+        } else {
+            vec![format!("Variable token: {{name: {}, Assignment: {}}}", self.name.value, self.assignment.to_tree_view()[0])]
+        }
     }
 }
 
@@ -28,6 +32,14 @@ impl VariableToken {
     pub fn get_assignable_mut(&mut self) -> &mut AssignableToken {
         &mut self.assignment
     }
+
+    pub fn new(name: NameToken, assignment: AssignableToken) -> Self {
+        VariableToken {
+            name,
+            assignment
+        }
+    }
+
 
     pub fn set_assignable_token(&mut self, assignable_token: AssignableToken) {
         self.assignment = assignable_token;

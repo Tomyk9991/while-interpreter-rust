@@ -1,8 +1,8 @@
 use std::fmt::{Debug, Display, Formatter};
-use std::ops::{Add, AddAssign, Deref, DerefMut, Sub, SubAssign};
 use crate::interpreter::models::CodeLine;
 use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
 use crate::interpreter::tokenizer::methods::MethodCallToken;
+use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
 #[derive(Clone, PartialEq)]
@@ -19,40 +19,6 @@ impl Display for AssignableToken {
             AssignableToken::Digit { value } => write!(f, "{}", value),
             AssignableToken::MethodCall { value } => write!(f, "{}", value),
         }
-    }
-}
-
-impl AddAssign for AssignableToken {
-    fn add_assign(&mut self, rhs: Self) {
-        *self = AssignableToken::Digit {
-            value: DigitToken::new(self.evaluate() + rhs.evaluate())
-        }
-    }
-}
-
-impl SubAssign for AssignableToken {
-    fn sub_assign(&mut self, rhs: Self) {
-        *self = AssignableToken::Digit {
-            value: DigitToken::new(self.evaluate() - rhs.evaluate())
-        }
-    }
-}
-
-impl Add for AssignableToken {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        let value = DigitToken::new(self.evaluate() + rhs.evaluate());
-        return AssignableToken::Digit { value };
-    }
-}
-
-impl Sub for AssignableToken {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        let value = DigitToken::new(self.evaluate() - rhs.evaluate());
-        return AssignableToken::Digit { value };
     }
 }
 
@@ -77,15 +43,15 @@ impl TreeViewElement for AssignableToken {
 }
 
 impl AssignableToken {
-    pub fn evaluate(&self, ) -> u32 {
+    pub fn evaluate(&self) -> u32 {
         match self {
-            AssignableToken::Name { value } => {
-                value.evaluate()
-            }
             AssignableToken::Digit { value } => {
                 value.evaluate()
             }
             AssignableToken::MethodCall { value } => {
+                value.evaluate()
+            }
+            AssignableToken::Name { value } => {
                 value.evaluate()
             }
         }
@@ -115,14 +81,38 @@ impl AssignableToken {
     }
 
     pub fn add_assign(&mut self, rhs: Self) {
+        let rhs_value = match rhs {
+            AssignableToken::Name { ref value } => {
+                value.evaluate()
+            }
+            AssignableToken::Digit { value } => {
+                value.evaluate()
+            }
+            AssignableToken::MethodCall { value } => {
+                value.evaluate()
+            }
+        };
+
         *self = AssignableToken::Digit {
-            value: DigitToken::new(self.evaluate() + rhs.evaluate())
+            value: DigitToken::new(self.evaluate() + rhs_value)
         }
     }
 
     pub fn sub_assign(&mut self, rhs: Self) {
+        let rhs_value = match rhs {
+            AssignableToken::Name { ref value } => {
+                value.evaluate()
+            }
+            AssignableToken::Digit { value } => {
+                value.evaluate()
+            }
+            AssignableToken::MethodCall { value } => {
+                value.evaluate()
+            }
+        };
+
         *self = AssignableToken::Digit {
-            value: DigitToken::new(self.evaluate() + rhs.evaluate())
+            value: DigitToken::new(self.evaluate() - rhs_value)
         }
     }
 }
