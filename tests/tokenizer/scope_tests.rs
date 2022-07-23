@@ -1,9 +1,9 @@
 use while_interpreter::interpreter::models::CodeLine;
-use while_interpreter::interpreter::tokenizer::methods::{MethodHeaderToken, ReturnToken};
-use while_interpreter::interpreter::tokenizer::models::{AssignableToken, Stackable};
-use while_interpreter::interpreter::tokenizer::operators::AdditiveOperatorToken;
-use while_interpreter::interpreter::tokenizer::Tokenizer;
-use while_interpreter::interpreter::tokenizer::variables::VariableToken;
+use while_interpreter::interpreter::lexer::methods::{MethodHeaderToken, ReturnToken};
+use while_interpreter::interpreter::lexer::models::{AssignableToken, Stackable};
+use while_interpreter::interpreter::lexer::operators::AdditiveOperatorToken;
+use while_interpreter::interpreter::lexer::Lexer;
+use while_interpreter::interpreter::lexer::variables::VariableToken;
 use while_interpreter::interpreter::utils::logging::Logger::NoLogger;
 
 #[test]
@@ -42,7 +42,7 @@ fn inner_body() {
     ];
 
     for pair in tests {
-        let tokenizer = Tokenizer::new(NoLogger);
+        let tokenizer = Lexer::new(NoLogger);
         let lines: Vec<CodeLine> = pair.0.iter().enumerate().map(|(i, l)| CodeLine::new(l, (i + 1) as u32)).collect();
         let scope = tokenizer.tokenize(lines);
 

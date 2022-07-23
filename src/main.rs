@@ -1,8 +1,8 @@
 use interpreter::read;
 use crate::interpreter::executor_states::RunTime;
 use crate::interpreter::normalize;
-use crate::interpreter::tokenizer::scopes::TopLevelScope;
-use crate::interpreter::tokenizer::Tokenizer;
+use crate::interpreter::lexer::scopes::TopLevelScope;
+use crate::interpreter::lexer::Lexer;
 use crate::interpreter::utils::env_args_parser;
 use crate::interpreter::utils::interpreter_watcher::{pseudo_status, pseudo_throw};
 use crate::interpreter::utils::logging::Logger;
@@ -33,7 +33,7 @@ fn main() {
     let mut source_code = read(&(path)).unwrap();
     source_code = normalize(&source_code);
 
-    let tokenizer = Tokenizer::new(logger.clone());
+    let tokenizer = Lexer::new(logger.clone());
     let scope: TopLevelScope = tokenizer.tokenize(source_code);
 
     if pseudo_status::get_status() {
@@ -42,5 +42,6 @@ fn main() {
     }
 
     let mut run_time = RunTime::new(scope, logger.clone());
+    // todo: make an iterator out of this, so you can terminate the program if a runtime error occurs.
     run_time.run();
 }

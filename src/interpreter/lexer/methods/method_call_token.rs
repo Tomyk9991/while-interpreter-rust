@@ -1,9 +1,9 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::executor_states::RunTime;
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
-use crate::interpreter::tokenizer::models::AssignableToken;
-use crate::interpreter::tokenizer::variables::VariableToken;
+use crate::interpreter::lexer::assignables::{DigitToken, NameToken};
+use crate::interpreter::lexer::models::AssignableToken;
+use crate::interpreter::lexer::variables::VariableToken;
 use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
@@ -60,7 +60,7 @@ impl MethodCallToken {
 
             value
         } else {
-            pseudo_throw(format!("Method not found"));
+            pseudo_throw(format!("Method not found: \"{}\"", self.name.value));
             0
         }
     }

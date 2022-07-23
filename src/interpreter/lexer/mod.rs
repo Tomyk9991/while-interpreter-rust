@@ -5,6 +5,6 @@ pub mod variables;
 pub mod scopes;
 pub mod while_tokens;
 pub mod operators;
-mod tokenizer;
+mod lexer;
 
-pub use tokenizer::Tokenizer;
+pub use lexer::Lexer;

@@ -1,6 +1,6 @@
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::methods::MethodToken;
-use crate::interpreter::tokenizer::models::{Stackable, Token};
+use crate::interpreter::lexer::methods::MethodToken;
+use crate::interpreter::lexer::models::{Stackable, Token};
 use crate::interpreter::utils::logging::{Logger, TreeViewElement};
 
 pub struct TopLevelScope {
@@ -37,7 +37,6 @@ impl TreeViewElement for TopLevelScope {
             "├── Methods:".to_string(),
         ];
 
-        // todo methods
         for method in &self.methods {
             let method_lines = method.to_tree_view();
             lines.push(format!("│  ├── Method token: {}", method.header_token.name.value.to_uppercase()));

@@ -1,15 +1,12 @@
-use std::fmt::format;
 use crate::interpreter::models::{BodyExecutor, MethodsList, VariablesList};
-use crate::interpreter::tokenizer::methods::MethodToken;
-use crate::interpreter::tokenizer::models::Stackable;
+use crate::interpreter::lexer::methods::MethodToken;
 use crate::interpreter::utils::logging::Logger;
-use crate::interpreter::tokenizer::scopes::TopLevelScope;
-use crate::interpreter::tokenizer::variables::VariableToken;
-use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
+use crate::interpreter::lexer::scopes::TopLevelScope;
+use crate::interpreter::lexer::variables::VariableToken;
 
 static mut VARIABLE_LIST: VariablesList = VariablesList::new();
 static mut METHODS_LIST: Option<MethodsList> = None;
-static mut initialized: bool = false;
+static mut INITIALIZED: bool = false;
 
 
 
@@ -33,7 +30,7 @@ impl RunTime {
         }
 
         unsafe {
-            initialized = true;
+            INITIALIZED = true;
         }
 
         RunTime {
@@ -48,7 +45,6 @@ impl RunTime {
         self.body_executor.execute();
 
 
-        self.logger.log("Variable states:");
         unsafe {
             self.logger.log(&format!("{}", VARIABLE_LIST));
         }
@@ -56,7 +52,7 @@ impl RunTime {
 
     pub fn initialized() -> bool {
         unsafe {
-            return initialized;
+            return INITIALIZED;
         }
     }
 
@@ -115,12 +111,6 @@ impl RunTime {
     pub fn get_variable_list() -> &'static mut VariablesList {
         unsafe {
             &mut VARIABLE_LIST
-        }
-    }
-
-    pub fn get_method_list() -> &'static mut MethodsList {
-        unsafe {
-            METHODS_LIST.as_mut().unwrap()
         }
     }
 }

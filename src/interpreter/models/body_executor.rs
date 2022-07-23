@@ -1,7 +1,5 @@
 use crate::interpreter::executor_states::RunTime;
-use crate::interpreter::tokenizer::models::Stackable;
-use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
-use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
+use crate::interpreter::lexer::models::Stackable;
 
 pub struct BodyExecutor {
     pub scope: Vec<Stackable>
@@ -18,14 +16,11 @@ impl BodyExecutor {
                     RunTime::get_variable_list().update(value.clone());
                 }
                 Stackable::MethodCallToken { ref value } => {
-                    let method = RunTime::get_method_list().get(&value.name.value);
-                    if let Some(method) = method {
-                        value.evaluate();
-                    } else {
-                        pseudo_throw(format!("No method \"{}\" found.", value.name.value))
-                    }
+                    value.evaluate();
                 }
-                Stackable::WhileToken { .. } => {}
+                Stackable::WhileToken { .. } => {
+
+                }
                 Stackable::ReturnToken { value } => {
                     return Some(value.return_value.as_ref().unwrap().evaluate());
                 }

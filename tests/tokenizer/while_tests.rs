@@ -1,10 +1,10 @@
 use while_interpreter::interpreter::models::CodeLine;
-use while_interpreter::interpreter::tokenizer::assignables::NameToken;
-use while_interpreter::interpreter::tokenizer::models::Stackable;
-use while_interpreter::interpreter::tokenizer::operators::AdditiveOperatorToken;
-use while_interpreter::interpreter::tokenizer::scopes::InnerBodyScope;
-use while_interpreter::interpreter::tokenizer::Tokenizer;
-use while_interpreter::interpreter::tokenizer::while_tokens::{WhileHeaderToken, WhileToken};
+use while_interpreter::interpreter::lexer::assignables::NameToken;
+use while_interpreter::interpreter::lexer::models::Stackable;
+use while_interpreter::interpreter::lexer::operators::AdditiveOperatorToken;
+use while_interpreter::interpreter::lexer::scopes::InnerBodyScope;
+use while_interpreter::interpreter::lexer::Lexer;
+use while_interpreter::interpreter::lexer::while_tokens::{WhileHeaderToken, WhileToken};
 use while_interpreter::interpreter::utils::logging::Logger::NoLogger;
 use while_interpreter::interpreter::utils::logging::TreeViewElement;
 
@@ -67,7 +67,7 @@ fn simple_while() {
     ];
 
     for test in tests {
-        let tokenizer = Tokenizer::new(NoLogger);
+        let tokenizer = Lexer::new(NoLogger);
         let scope = tokenizer.tokenize(test.code_lines);
 
         if test.while_count > 0 {
@@ -116,7 +116,7 @@ fn extended_while() {
     ];
 
     for test in tests {
-        let tokenizer = Tokenizer::new(NoLogger);
+        let tokenizer = Lexer::new(NoLogger);
         let scope = tokenizer.tokenize(test.code_lines);
 
         assert_eq!(scope.stack.len(), test.while_count as usize);
@@ -160,7 +160,7 @@ fn nested_while_loop() {
     ];
 
     for test in tests {
-        let tokenizer = Tokenizer::new(NoLogger);
+        let tokenizer = Lexer::new(NoLogger);
         let scope = tokenizer.tokenize(test.code_lines);
 
         let mut nesting_count = 0;

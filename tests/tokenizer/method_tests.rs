@@ -1,6 +1,6 @@
 use while_interpreter::interpreter::models::CodeLine;
-use while_interpreter::interpreter::tokenizer::methods::MethodHeaderToken;
-use while_interpreter::interpreter::tokenizer::Tokenizer;
+use while_interpreter::interpreter::lexer::methods::MethodHeaderToken;
+use while_interpreter::interpreter::lexer::Lexer;
 use while_interpreter::interpreter::utils::logging::Logger::NoLogger;
 
 #[test]
@@ -62,7 +62,7 @@ fn complete_method() {
     ];
 
     for pair in tests {
-        let tokenizer = Tokenizer::new(NoLogger);
+        let tokenizer = Lexer::new(NoLogger);
         let lines: Vec<CodeLine> = (pair.0 as Vec<&str>).iter().enumerate().map(|(i, l)| CodeLine::new(l, (i + 1) as u32)).collect();
         let scope = tokenizer.tokenize(lines);
 

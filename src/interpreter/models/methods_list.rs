@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::interpreter::tokenizer::methods::MethodToken;
+use crate::interpreter::lexer::methods::MethodToken;
 
 pub struct MethodsList {
     pub tokens: HashMap<String, MethodToken>

@@ -4,10 +4,10 @@ mod token;
 pub use assignable_token::AssignableToken;
 pub use token::Token;
 
-use crate::interpreter::tokenizer::methods::{MethodCallToken, ReturnToken};
-use crate::interpreter::tokenizer::operators::AdditiveOperatorToken;
-use crate::interpreter::tokenizer::variables::VariableToken;
-use crate::interpreter::tokenizer::while_tokens::WhileToken;
+use crate::interpreter::lexer::methods::{MethodCallToken, ReturnToken};
+use crate::interpreter::lexer::operators::AdditiveOperatorToken;
+use crate::interpreter::lexer::variables::VariableToken;
+use crate::interpreter::lexer::while_tokens::WhileToken;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum Stackable {

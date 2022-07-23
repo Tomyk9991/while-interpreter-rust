@@ -1,7 +1,6 @@
 use std::fmt::{Display, Formatter};
-use std::slice::Iter;
-use crate::interpreter::tokenizer::operators::{AdditiveOperatorToken, Operator};
-use crate::interpreter::tokenizer::variables::VariableToken;
+use crate::interpreter::lexer::operators::{AdditiveOperatorToken, Operator};
+use crate::interpreter::lexer::variables::VariableToken;
 use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 
@@ -20,34 +19,61 @@ impl VariablesList {
     }
 
     pub fn add_or_update(&mut self, token: VariableToken) -> bool {
-        // there is a problem, when the name of a parameter is the same as a already defined variable.
-        // in this case a new variable is created, but the old one is not updated.
-        // Design the language, so variables from other scopes are not even visible.
-        // You can only manipulate the variables in the current scope, and the variables that were passed a parameter.
+        // It's possible you can manipulate variable of lower and the same indent level, but only
+        // if there is only one variables named like the token.name.value, otherwise its shadowed and the highest indent_level is used.
+        // get all variables with the same name as the token.name.value
+        let mut potential_variables: Vec<usize> = Vec::new();
 
-        let mut found_value = self.tokens.iter_mut().find(|(variable, indent_level)| {
-            variable.name.value == token.name.value && *indent_level == self.current_indent_level
-        });
+        for (index, tuple) in self.tokens.iter().enumerate() {
+            if tuple.0.name.value == token.name.value {
+                potential_variables.push(index);
+            }
+        }
 
-        return if let Some((ref mut var, ref mut indent)) = found_value {
+        // sort the potential variables by their indent level
+        potential_variables.sort_by(|a, b| self.tokens[*a].1.cmp(&self.tokens[*b].1));
+
+        if potential_variables.len() == 0 {
+            self.tokens.push((token, self.current_indent_level));
+            return true;
+        }
+
+        let found_value: Option<&mut (VariableToken, u32)> = self.tokens.get_mut(potential_variables[0]);
+
+
+        if let Some((ref mut var, ref mut indent)) = found_value {
+            if self.current_indent_level > *indent {
+                self.tokens.push((token, self.current_indent_level));
+                return true;
+            }
+
             var.set_assignable_token(token.assignment);
-            false
+            return false;
         } else {
             self.tokens.push((token, self.current_indent_level));
-            true
+            return true;
         }
     }
 
     pub fn update(&mut self, operator_token: AdditiveOperatorToken) {
-        let tuple = self.tokens.iter_mut().find(|(variable, indent)| {
-            variable.name.value == operator_token.name.value && *indent == self.current_indent_level
-        });
+        let mut potential_variables: Vec<usize> = Vec::new();
+
+        for (index, tuple) in self.tokens.iter().enumerate() {
+            if tuple.0.name.value == operator_token.name.value {
+                potential_variables.push(index);
+            }
+        }
+
+        // sort the potential variables by their indent level
+        potential_variables.sort_by(|a, b| self.tokens[*a].1.cmp(&self.tokens[*b].1));
+        let tuple = self.tokens.get_mut(potential_variables[potential_variables.len() - 1]);
 
         if tuple.is_none() {
             pseudo_throw(format!("You can't operate on a non existent variable: {}", operator_token.name.value));
+            return;
         }
 
-        let (variable_token, indent) = tuple.unwrap();
+        let (variable_token, _) = tuple.unwrap();
 
         match operator_token.operator {
             Operator::Add => variable_token.get_assignable_mut().add_assign(operator_token.rhs_operand),
@@ -80,7 +106,7 @@ impl VariablesList {
 
     #[allow(dead_code)]
     pub fn find_mut<P>(&mut self, mut predicate: P) -> Option<&mut VariableToken> where P: FnMut(&mut VariableToken) -> bool {
-        for (variable_token, indent_level) in self.tokens.iter_mut() {
+        for (variable_token, _) in self.tokens.iter_mut() {
             let result = predicate(variable_token);
             if result {
                 return Some(variable_token);

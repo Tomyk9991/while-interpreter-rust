@@ -1,6 +1,6 @@
 use while_interpreter::interpreter::models::CodeLine;
-use while_interpreter::interpreter::tokenizer::assignables::{DigitToken, NameToken};
-use while_interpreter::interpreter::tokenizer::methods::MethodCallToken;
+use while_interpreter::interpreter::lexer::assignables::{DigitToken, NameToken};
+use while_interpreter::interpreter::lexer::methods::MethodCallToken;
 
 #[test]
 fn name_token() {

@@ -1,5 +1,5 @@
 use while_interpreter::interpreter::models::CodeLine;
-use while_interpreter::interpreter::tokenizer::operators::AdditiveOperatorToken;
+use while_interpreter::interpreter::lexer::operators::AdditiveOperatorToken;
 
 fn get_tests(operator: &str) -> [(String, bool); 7]{
     let tests =  [

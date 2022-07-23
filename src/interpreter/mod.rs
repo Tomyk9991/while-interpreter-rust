@@ -1,7 +1,7 @@
 mod read_helper;
 pub mod models;
 pub mod utils;
-pub mod tokenizer;
+pub mod lexer;
 pub mod constants;
 pub mod executor_states;
 

@@ -1,9 +1,9 @@
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::methods::{MethodHeaderToken, ReturnToken};
-use crate::interpreter::tokenizer::models::{Stackable, Token};
-use crate::interpreter::tokenizer::operators::AdditiveOperatorToken;
-use crate::interpreter::tokenizer::variables::VariableToken;
-use crate::interpreter::tokenizer::while_tokens::{WhileEscapeToken, WhileHeaderToken, WhileToken};
+use crate::interpreter::lexer::methods::{MethodHeaderToken, ReturnToken};
+use crate::interpreter::lexer::models::{Stackable, Token};
+use crate::interpreter::lexer::operators::AdditiveOperatorToken;
+use crate::interpreter::lexer::variables::VariableToken;
+use crate::interpreter::lexer::while_tokens::{WhileEscapeToken, WhileHeaderToken, WhileToken};
 use crate::interpreter::utils::logging::TreeViewElement;
 
 #[derive(Clone, Debug, PartialEq)]

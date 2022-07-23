@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::{BodyExecutor, CodeLine};
-use crate::interpreter::tokenizer::methods::MethodHeaderToken;
-use crate::interpreter::tokenizer::models::Token;
-use crate::interpreter::tokenizer::scopes::InnerBodyScope;
+use crate::interpreter::lexer::methods::MethodHeaderToken;
+use crate::interpreter::lexer::models::Token;
+use crate::interpreter::lexer::scopes::InnerBodyScope;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
@@ -34,7 +34,6 @@ impl Display for MethodToken {
 
 impl MethodToken {
     pub fn ends_with_return(&self) -> bool {
-        // todo
         return self.scope.stack.last().unwrap().is_return_token();
     }
 

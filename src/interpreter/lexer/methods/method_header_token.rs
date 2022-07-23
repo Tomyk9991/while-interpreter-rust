@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::assignables::NameToken;
-use crate::interpreter::tokenizer::methods::type_token::TypeToken;
+use crate::interpreter::lexer::assignables::NameToken;
+use crate::interpreter::lexer::methods::type_token::TypeToken;
 use crate::interpreter::utils::extension_methods::VecNameTokenExtension;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;

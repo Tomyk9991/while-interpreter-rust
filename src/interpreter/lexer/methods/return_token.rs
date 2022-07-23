@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::methods::MethodHeaderToken;
-use crate::interpreter::tokenizer::methods::type_token::TypeToken;
-use crate::interpreter::tokenizer::models::AssignableToken;
+use crate::interpreter::lexer::methods::MethodHeaderToken;
+use crate::interpreter::lexer::methods::type_token::TypeToken;
+use crate::interpreter::lexer::models::AssignableToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 

@@ -1,8 +1,7 @@
 use std::fmt::{Debug, Display, Formatter};
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::assignables::{DigitToken, NameToken};
-use crate::interpreter::tokenizer::methods::MethodCallToken;
-use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
+use crate::interpreter::lexer::assignables::{DigitToken, NameToken};
+use crate::interpreter::lexer::methods::MethodCallToken;
 use crate::interpreter::utils::logging::TreeViewElement;
 
 #[derive(Clone, PartialEq)]

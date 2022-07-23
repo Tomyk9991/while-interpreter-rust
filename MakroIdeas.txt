@@ -1,0 +1,41 @@
+// a *= 2;
+// =
+// a += a;
+// a += a;
+marcro! variable *= assignable; = {
+	counter = assignable;
+	counter -= 1;
+
+	a = assignable;
+	
+	while counter != 0:
+		variable += a;
+		counter -= 1;
+	#
+}
+
+b = 3;
+b *= 3; <=> b = b * 3 <=> b = 3 * 3 <=> b = 9;
+
+Beispiel:
+
+counter = 2;
+a = 3;
+
+// iter 0
+while 2 != 0:
+	b += 3; // 6
+	counter -= 1; -> 1
+#
+
+// iter 1
+while 2 != 0:
+	b += 3; // 9
+	counter -= 1; -> 0
+#
+
+// iter 0
+while 1 != 0:
+	b += 3; // 6
+	counter -= 1; -> 2
+#

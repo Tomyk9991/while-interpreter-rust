@@ -1,4 +1,4 @@
-use crate::interpreter::tokenizer::models::Stackable;
+use crate::interpreter::lexer::models::Stackable;
 
 pub trait TreeViewElement {
     fn to_tree_view(&self) -> Vec<String>;

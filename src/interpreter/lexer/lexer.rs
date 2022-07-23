@@ -1,19 +1,19 @@
 use std::borrow::Borrow;
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::methods::MethodToken;
-use crate::interpreter::tokenizer::models::Stackable;
-use crate::interpreter::tokenizer::scopes::TopLevelScope;
-use crate::interpreter::tokenizer::while_tokens::WhileToken;
+use crate::interpreter::lexer::methods::MethodToken;
+use crate::interpreter::lexer::models::Stackable;
+use crate::interpreter::lexer::scopes::TopLevelScope;
+use crate::interpreter::lexer::while_tokens::WhileToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::Logger;
 
-pub struct Tokenizer {
+pub struct Lexer {
     logger: Logger
 }
 
-impl Tokenizer {
-    pub fn new(logger: Logger) -> Tokenizer {
-        Tokenizer {
+impl Lexer {
+    pub fn new(logger: Logger) -> Lexer {
+        Lexer {
             logger
         }
     }
@@ -86,7 +86,6 @@ impl Tokenizer {
                         if let Some(stacked_while_token) = inner_token.as_ref().unwrap().to_while_token() {
                             if !stacked_while_token.escape_token_found {
                                 pseudo_throw(format!("Missing escape token at line: {}", while_token.clone().scope.unwrap().last_visited));
-                                // todo: vielleicht falsch. Wobei Operationen nach einem pseudo_throw sowieso egal sind
                                 scope.stack.pop();
                                 removed_while_from_stack = true;
                                 break;

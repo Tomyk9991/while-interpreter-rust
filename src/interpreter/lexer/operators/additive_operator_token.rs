@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::assignables::NameToken;
-use crate::interpreter::tokenizer::models::AssignableToken;
+use crate::interpreter::lexer::assignables::NameToken;
+use crate::interpreter::lexer::models::AssignableToken;
 use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 use crate::interpreter::utils::logging::TreeViewElement;
 
@@ -31,7 +31,7 @@ pub struct AdditiveOperatorToken {
 
 impl Display for AdditiveOperatorToken {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {} {}", self.name, self.operator, self.rhs_operand)
+        write!(f, "{} {} {}", self.name, self.operator, self.rhs_operand.evaluate())
     }
 }
 

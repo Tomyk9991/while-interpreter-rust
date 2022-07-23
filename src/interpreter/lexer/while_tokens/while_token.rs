@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 use crate::interpreter::models::CodeLine;
-use crate::interpreter::tokenizer::models::Token;
-use crate::interpreter::tokenizer::scopes::InnerBodyScope;
-use crate::interpreter::tokenizer::while_tokens::WhileHeaderToken;
+use crate::interpreter::lexer::models::Token;
+use crate::interpreter::lexer::scopes::InnerBodyScope;
+use crate::interpreter::lexer::while_tokens::WhileHeaderToken;
 use crate::interpreter::utils::logging::TreeViewElement;
 
 #[derive(Clone, Debug, PartialEq)]
