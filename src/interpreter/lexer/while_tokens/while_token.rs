@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use crate::interpreter::models::CodeLine;
+use crate::interpreter::models::{BodyExecutor, CodeLine};
 use crate::interpreter::lexer::models::Token;
 use crate::interpreter::lexer::scopes::InnerBodyScope;
 use crate::interpreter::lexer::while_tokens::WhileHeaderToken;
@@ -12,6 +12,23 @@ pub struct WhileToken {
     pub escape_token_found: bool,
 
     code_lines: Vec<CodeLine>
+}
+
+impl WhileToken {
+    pub fn evaluate(&self) {
+        if let Some(against_zero_variable) = &self.header_token.against_zero_variable {
+            if let Some(scope) = &self.scope {
+
+                let body_executor: BodyExecutor = BodyExecutor {
+                    scope: scope.stack.clone()
+                };
+
+                while against_zero_variable.evaluate() != 0 {
+                    body_executor.execute();
+                }
+            }
+        }
+    }
 }
 
 impl Display for WhileToken {

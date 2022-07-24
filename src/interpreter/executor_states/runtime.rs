@@ -3,6 +3,7 @@ use crate::interpreter::lexer::methods::MethodToken;
 use crate::interpreter::utils::logging::Logger;
 use crate::interpreter::lexer::scopes::TopLevelScope;
 use crate::interpreter::lexer::variables::VariableToken;
+use crate::interpreter::utils::interpreter_watcher::pseudo_throw;
 
 static mut VARIABLE_LIST: VariablesList = VariablesList::new();
 static mut METHODS_LIST: Option<MethodsList> = None;
@@ -103,6 +104,8 @@ impl RunTime {
             if let Some((variable_token, _)) = variable_token {
                 return variable_token.assignment.evaluate();
             }
+
+            pseudo_throw(format!("Variable {} not found.", variable_name));
 
             return 0;
         }

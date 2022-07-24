@@ -1,30 +1,36 @@
 x = 5;
+a = 3;
 
 num Add(x, y):
     z = x;
     z += y;
     return z;
 
-num div(x, y, z):
-    while a != 0:
-        while b != 0:
-            c += 5;
-        #
-        quertz = 5;
+num Mul(a, b):
+    result = a;
+    counter = b;
+    counter -= 1;
+
+    while counter != 0:
+        result += a;
+        counter -= 1;
     #
-    return b;
+
+    return result;
 
 x += 2;
 y = 3;
+quertz = 1;
 
 while a != 0:
     while a != 0:
-        b += 5;
+        a -= 1;
     #
     quertz = 5;
 #
 
 y += x;
 z = Add(x, y);
+product = Mul(x, y);
 
-WriteLine(z);
+// WriteLine(z);

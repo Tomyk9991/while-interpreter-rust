@@ -18,8 +18,8 @@ impl BodyExecutor {
                 Stackable::MethodCallToken { ref value } => {
                     value.evaluate();
                 }
-                Stackable::WhileToken { .. } => {
-
+                Stackable::WhileToken { value } => {
+                    value.evaluate();
                 }
                 Stackable::ReturnToken { value } => {
                     return Some(value.return_value.as_ref().unwrap().evaluate());
