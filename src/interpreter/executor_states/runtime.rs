@@ -18,10 +18,16 @@ pub struct RunTime {
 
 
 impl RunTime {
-    pub fn new(scope: TopLevelScope, logger: Logger) -> Self {
+    pub fn reset() {
         unsafe {
             METHODS_LIST = Some(MethodsList::new());
+            VARIABLE_LIST =  VariablesList::new();
+            INITIALIZED = false;
         }
+    }
+
+    pub fn new(scope: TopLevelScope, logger: Logger) -> Self {
+        RunTime::reset();
 
         for method in &scope.methods {
             let method_name: String = method.header_token.name.value.clone();

@@ -60,7 +60,7 @@ impl MethodHeaderToken {
         let mut parameters = Vec::new();
         if split.len() > 2 {
             let f: Vec<&str> = split[2..][..].to_vec();
-            let op_parameters = parse_parameters(f, code_line);
+            let op_parameters = parse_p(&String::from(f.join("")));
 
             if op_parameters.is_none() {
                 return None;
@@ -77,35 +77,52 @@ impl MethodHeaderToken {
     }
 }
 
-fn parse_parameters(parameters: Vec<&str>, code_line: &CodeLine) -> Option<Vec<NameToken>> {
-    let mut p = Vec::new();
+fn parse_p(parameter_string: &str) -> Option<Vec<NameToken>> {
+    let mut parameters: Vec<NameToken> = Vec::new();
+    let mut individual_parameters: Vec<&str> = Vec::new();
+    let mut counter = 0;
+    let mut current_start_index = 0;
 
-    let len = parameters.len();
-    let mut i = 0;
+    for (index, c) in parameter_string.chars().enumerate() {
+        match c {
+            '(' => counter += 1,
+            ')' => counter -= 1,
+            ',' => {
+                if counter == 0 {
+                    let value = &parameter_string[current_start_index..index].trim();
 
-    for parameter in parameters {
-        let ending_with_comma = parameter.ends_with(",");
+                    if value.is_empty() {
+                        pseudo_throw("Parameter can't be empty".to_string());
+                        return None;
+                    }
 
-        if i != len - 1 && !ending_with_comma {
-            pseudo_throw(format!("Expected a sequence as parameter at line: {}", code_line.line_number));
-            return None;
+                    individual_parameters.push(value);
+                    current_start_index = index + 1;
+                }
+            }
+            _ => { }
         }
-
-        let name = &parameter.replace(",", "");
-
-        let parameter = NameToken::parse(name);
-
-        if let Some(value) = parameter {
-            p.push(value);
-        } else {
-            pseudo_throw(format!("Expected a name for the parameter at line: {}", code_line.line_number));
-            return None;
-        }
-
-        i += 1;
     }
 
-    return Some(p);
+    if counter != 0 {
+        pseudo_throw("Expected ')' at method header".to_string());
+        return None;
+    }
+
+    individual_parameters.push(&parameter_string[current_start_index..parameter_string.len()].trim());
+
+    for para in individual_parameters {
+        let assignable = NameToken::parse(para);
+
+        if assignable.is_some() {
+            parameters.push(assignable.unwrap());
+        } else {
+            return None;
+        }
+    }
+
+
+    return Some(parameters);
 }
 
 impl TreeViewElement for MethodHeaderToken {

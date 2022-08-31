@@ -11,6 +11,7 @@ fn method_header() {
         ("void this_is_a_long_method()", false),
         ("num hallo():", true),
         ("void hallo():", true),
+        ("num Add(x ,y):", true),
         ("num againLongMethodName(a, b):", true),
         ("num againLongMethodName(a, 5):", false),
         ("void againLongMethodName(a, b324s):", true),

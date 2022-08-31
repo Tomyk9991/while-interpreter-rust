@@ -24,4 +24,11 @@ pub mod pseudo_status {
             return &PSEUDO_THROW_MESSAGE;
         }
     }
+
+    pub fn reset_status() {
+        unsafe {
+            STATUS = false;
+            PSEUDO_THROW_MESSAGE = String::from("");
+        }
+    }
 }
