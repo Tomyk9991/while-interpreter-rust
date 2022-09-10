@@ -3,10 +3,11 @@ use while_interpreter::interpreter::lexer::Lexer;
 use while_interpreter::interpreter::lexer::scopes::TopLevelScope;
 use while_interpreter::interpreter::models::CodeLine;
 use while_interpreter::interpreter::normalize;
-use while_interpreter::interpreter::utils::interpreter_watcher::{pseudo_status, pseudo_throw};
+use while_interpreter::interpreter::utils::interpreter_watcher::{pseudo_status};
 use while_interpreter::interpreter::utils::interpreter_watcher::pseudo_status::get_status;
 use while_interpreter::interpreter::utils::logging::Logger;
 use while_interpreter::interpreter::utils::logging::Logger::{NoLogger};
+use crate::code_line_gen::{gen_code_line, gen_code_line_and_reset};
 
 
 struct StringValuePair<T> {
@@ -93,13 +94,13 @@ fn method_call() {
     let tests = [
         FindableCodeLineStackPair {
             code_lines: vec![
-                CodeLine::new("x = 5;", 1),
-                CodeLine::new("a = 3;", 2),
-                CodeLine::new("num Add(x ,y):", 3),
-                CodeLine::new("    z = x;", 4),
-                CodeLine::new("    z += y;", 5),
-                CodeLine::new("    return z;", 6),
-                CodeLine::new("r = Add(x, a);", 7),
+                gen_code_line_and_reset("x = 5;"),
+                gen_code_line("a = 3;"),
+                gen_code_line("num Add(x ,y):"),
+                gen_code_line("    z = x;"),
+                gen_code_line("    z += y;"),
+                gen_code_line("    return z;"),
+                gen_code_line("r = Add(x, a);"),
             ],
             results: vec![
                 FindableStringValuePair::<u32> {
@@ -126,38 +127,38 @@ fn method_call() {
         },
         FindableCodeLineStackPair {
             code_lines: vec![
-                CodeLine::new("x = 5;", 1),
-                CodeLine::new("a = 3;", 2),
-                CodeLine::new("num Add(x, y):", 3),
-                CodeLine::new("    z = x;", 4),
-                CodeLine::new("    z += y;", 5),
-                CodeLine::new("    return z;", 6),
-                CodeLine::new("", 7),
-                CodeLine::new("num Mul(a, b):", 8),
-                CodeLine::new("    result = a;", 9),
-                CodeLine::new("    counter = b;", 10),
-                CodeLine::new("    counter -= 1;", 11),
-                CodeLine::new("    while counter != 0:", 12),
-                CodeLine::new("        result += a;", 13),
-                CodeLine::new("        counter -= 1;", 14),
-                CodeLine::new("    #", 15),
-                CodeLine::new("", 16),
-                CodeLine::new("    return result;", 17),
-                CodeLine::new("", 18),
-                CodeLine::new("x += 2;", 19),
-                CodeLine::new("y = 3;", 20),
-                CodeLine::new("quertz = 1;", 21),
-                CodeLine::new("", 22),
-                CodeLine::new("while a != 0:", 23),
-                CodeLine::new("    while a != 0:", 24),
-                CodeLine::new("        a -= 1;", 25),
-                CodeLine::new("    #", 26),
-                CodeLine::new("    quertz = 5;", 27),
-                CodeLine::new("#", 28),
-                CodeLine::new("", 29),
-                CodeLine::new("y += x;", 30),
-                CodeLine::new("z = Add(x, y);", 31),
-                CodeLine::new("product = Mul(x, y);", 32),
+                gen_code_line_and_reset("x = 5;"),
+                gen_code_line("a = 3;"),
+                gen_code_line("num Add(x, y):"),
+                gen_code_line("    z = x;"),
+                gen_code_line("    z += y;"),
+                gen_code_line("    return z;"),
+                gen_code_line(""),
+                gen_code_line("num Mul(a, b):"),
+                gen_code_line("    result = a;"),
+                gen_code_line("    counter = b;"),
+                gen_code_line("    counter -= 1;"),
+                gen_code_line("    while counter != 0:"),
+                gen_code_line("        result += a;"),
+                gen_code_line("        counter -= 1;"),
+                gen_code_line("    #"),
+                gen_code_line(""),
+                gen_code_line("    return result;"),
+                gen_code_line(""),
+                gen_code_line("x += 2;"),
+                gen_code_line("y = 3;"),
+                gen_code_line("quertz = 1;"),
+                gen_code_line(""),
+                gen_code_line("while a != 0:"),
+                gen_code_line("    while a != 0:"),
+                gen_code_line("        a -= 1;"),
+                gen_code_line("    #"),
+                gen_code_line("    quertz = 5;"),
+                gen_code_line("#"),
+                gen_code_line(""),
+                gen_code_line("y += x;"),
+                gen_code_line("z = Add(x, y);"),
+                gen_code_line("product = Mul(x, y);"),
             ],
             results: vec![
                 FindableStringValuePair::<u32> {
@@ -230,17 +231,17 @@ fn while_return() {
     let tests = [
         FindableCodeLineStackPair {
             code_lines: vec![
-                CodeLine::new("x = 5;", 1),
-                CodeLine::new("a = 3;", 2),
-                CodeLine::new("num IsEqual(actual, expected):", 3),
-                CodeLine::new("    target = actual;", 4),
-                CodeLine::new("    target -= expected;", 5),
-                CodeLine::new("    while target != 0:", 6),
-                CodeLine::new("        return 0;", 7),
-                CodeLine::new("    #", 8),
-                CodeLine::new("    return 1;", 9),
-                CodeLine::new("y = IsEqual(x, a);", 10),
-                CodeLine::new("z = IsEqual(x, x);", 11),
+                gen_code_line_and_reset("x = 5;"),
+                gen_code_line("a = 3;"),
+                gen_code_line("num IsEqual(actual, expected):"),
+                gen_code_line("    target = actual;"),
+                gen_code_line("    target -= expected;"),
+                gen_code_line("    while target != 0:"),
+                gen_code_line("        return 0;"),
+                gen_code_line("    #"),
+                gen_code_line("    return 1;"),
+                gen_code_line("y = IsEqual(x, a);"),
+                gen_code_line("z = IsEqual(x, x);"),
             ],
             results: vec![
                 FindableStringValuePair::<u32> {
@@ -282,19 +283,19 @@ fn while_return() {
         },
         FindableCodeLineStackPair {
             code_lines: vec![
-                CodeLine::new("x = 5;", 1),
-                CodeLine::new("a = 3;", 2),
-                CodeLine::new("num IsEqual(actual, expected):", 3),
-                CodeLine::new("    target = actual;", 4),
-                CodeLine::new("    target -= expected;", 5),
-                CodeLine::new("    while target != 0:", 6),
-                CodeLine::new("        while target != 0:", 7),
-                CodeLine::new("            return 0;", 8),
-                CodeLine::new("        #", 9),
-                CodeLine::new("    #", 10),
-                CodeLine::new("    return 1;", 11),
-                CodeLine::new("y = IsEqual(x, a);", 12),
-                CodeLine::new("z = IsEqual(x, x);", 13),
+                gen_code_line_and_reset("x = 5;"),
+                gen_code_line("a = 3;"),
+                gen_code_line("num IsEqual(actual, expected):"),
+                gen_code_line("    target = actual;"),
+                gen_code_line("    target -= expected;"),
+                gen_code_line("    while target != 0:"),
+                gen_code_line("        while target != 0:"),
+                gen_code_line("            return 0;"),
+                gen_code_line("        #"),
+                gen_code_line("    #"),
+                gen_code_line("    return 1;"),
+                gen_code_line("y = IsEqual(x, a);"),
+                gen_code_line("z = IsEqual(x, x);"),
             ],
             results: vec![
                 FindableStringValuePair::<u32> {
@@ -342,6 +343,93 @@ fn while_return() {
 
         let source_code = normalize(&test.code_lines);
         let lexer = Lexer::new(Logger::NoLogger);
+        let scope: TopLevelScope = lexer.tokenize(source_code);
+
+        if pseudo_status::get_status() {
+            println!("Status failed: not continuing");
+            println!("{}", pseudo_status::get_message());
+            return;
+        }
+
+
+        let mut run_time = RunTime::new(scope, NoLogger);
+        run_time.run();
+
+
+        for result in &test.results {
+            let actual_result = RunTime::get_value_from_current_name(&result.variable_name);
+            let expected = result.value;
+
+            if result.findable == true {
+                assert_eq!(actual_result, expected);
+            } else {
+                assert!(get_status());
+            }
+        }
+    }
+}
+
+#[test]
+fn factorial_recursive() {
+    let tests = [
+        FindableCodeLineStackPair {
+            code_lines: vec![
+                gen_code_line_and_reset("x = 5;"),
+                gen_code_line("num Mul(a, b):"),
+                gen_code_line("    result = a;"),
+                gen_code_line("    counter = b;"),
+                gen_code_line("    counter -= 1;"),
+                gen_code_line("    while counter != 0:"),
+                gen_code_line("        result += a;"),
+                gen_code_line("        counter -= 1;"),
+                gen_code_line("    #"),
+                gen_code_line(""),
+                gen_code_line("    return result;"),
+                gen_code_line("num IsEqual(actual, expected):"),
+                gen_code_line("    target = actual;"),
+                gen_code_line("    target -= expected;"),
+                gen_code_line("    while target != 0:"),
+                gen_code_line("        return 0;"),
+                gen_code_line("    #"),
+                gen_code_line("    return 1;"),
+                gen_code_line("num Factorial(n):"),
+                gen_code_line("    isZero = IsEqual(n, 0);"),
+                gen_code_line("    isOne  = IsEqual(n, 1);"),
+                gen_code_line("    while isZero != 0:"),
+                gen_code_line("        return 1;"),
+                gen_code_line("    #"),
+                gen_code_line("    while isOne != 0:"),
+                gen_code_line("        return 1;"),
+                gen_code_line("    #"),
+                gen_code_line("    temp = n;"),
+                gen_code_line("    temp -= 1;"),
+                gen_code_line("    rec = Factorial(temp);"),
+                gen_code_line("    f = Mul(n, rec);"),
+                gen_code_line("    return f;"),
+                gen_code_line("z = Factorial(x);"),
+
+            ],
+            results: vec![
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("x"),
+                    value: 5,
+                    findable: true
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("z"),
+                    value: 120, // 5! = 120
+                    findable: true
+                },
+            ]
+        },
+    ];
+
+    for test in tests {
+        pseudo_status::reset_status();
+        RunTime::reset();
+
+        let source_code = normalize(&test.code_lines);
+        let lexer = Lexer::new(NoLogger);
         let scope: TopLevelScope = lexer.tokenize(source_code);
 
         if pseudo_status::get_status() {
