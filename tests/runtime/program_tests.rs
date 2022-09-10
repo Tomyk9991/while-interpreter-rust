@@ -6,7 +6,7 @@ use while_interpreter::interpreter::normalize;
 use while_interpreter::interpreter::utils::interpreter_watcher::{pseudo_status, pseudo_throw};
 use while_interpreter::interpreter::utils::interpreter_watcher::pseudo_status::get_status;
 use while_interpreter::interpreter::utils::logging::Logger;
-use while_interpreter::interpreter::utils::logging::Logger::{NoLogger, StdLogger};
+use while_interpreter::interpreter::utils::logging::Logger::{NoLogger};
 
 
 struct StringValuePair<T> {
@@ -256,13 +256,82 @@ fn while_return() {
                 FindableStringValuePair::<u32> {
                     variable_name: String::from("y"),
                     value: 0,
-                    findable: false
+                    findable: true
                 },
                 FindableStringValuePair::<u32> {
                     variable_name: String::from("z"),
                     value: 1,
                     findable: true
-                }
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("target"),
+                    value: 0,
+                    findable: false
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("expected"),
+                    value: 0,
+                    findable: false
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("actual"),
+                    value: 0,
+                    findable: false
+                },
+            ]
+        },
+        FindableCodeLineStackPair {
+            code_lines: vec![
+                CodeLine::new("x = 5;", 1),
+                CodeLine::new("a = 3;", 2),
+                CodeLine::new("num IsEqual(actual, expected):", 3),
+                CodeLine::new("    target = actual;", 4),
+                CodeLine::new("    target -= expected;", 5),
+                CodeLine::new("    while target != 0:", 6),
+                CodeLine::new("        while target != 0:", 7),
+                CodeLine::new("            return 0;", 8),
+                CodeLine::new("        #", 9),
+                CodeLine::new("    #", 10),
+                CodeLine::new("    return 1;", 11),
+                CodeLine::new("y = IsEqual(x, a);", 12),
+                CodeLine::new("z = IsEqual(x, x);", 13),
+            ],
+            results: vec![
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("x"),
+                    value: 5,
+                    findable: true
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("a"),
+                    value: 3,
+                    findable: true
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("y"),
+                    value: 0,
+                    findable: true
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("z"),
+                    value: 1,
+                    findable: true
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("target"),
+                    value: 0,
+                    findable: false
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("expected"),
+                    value: 0,
+                    findable: false
+                },
+                FindableStringValuePair::<u32> {
+                    variable_name: String::from("actual"),
+                    value: 0,
+                    findable: false
+                },
             ]
         }
     ];
@@ -282,19 +351,19 @@ fn while_return() {
         }
 
 
-        let mut run_time = RunTime::new(scope, StdLogger);
+        let mut run_time = RunTime::new(scope, NoLogger);
         run_time.run();
 
 
-        // for result in &test.results {
-        //     let actual_result = RunTime::get_value_from_current_name(&result.variable_name);
-        //     let expected = result.value;
-        //
-        //     if result.findable == true {
-        //         assert_eq!(actual_result, expected);
-        //     } else {
-        //         assert!(get_status());
-        //     }
-        // }
+        for result in &test.results {
+            let actual_result = RunTime::get_value_from_current_name(&result.variable_name);
+            let expected = result.value;
+
+            if result.findable == true {
+                assert_eq!(actual_result, expected);
+            } else {
+                assert!(get_status());
+            }
+        }
     }
 }
