@@ -25,6 +25,7 @@ pub mod pseudo_status {
         }
     }
 
+    #[allow(dead_code)]
     pub fn reset_status() {
         unsafe {
             STATUS = false;

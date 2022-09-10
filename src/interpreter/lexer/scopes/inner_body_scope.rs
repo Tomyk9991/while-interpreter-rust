@@ -56,7 +56,7 @@ impl InnerBodyScope {
 
         let while_header_token = WhileHeaderToken::parse(line);
         if while_header_token.is_some() {
-            let mut while_token = WhileToken::new(while_header_token.unwrap(), self.code_lines.clone());
+            let mut while_token = WhileToken::new(while_header_token.unwrap(), self.header.clone(), self.code_lines.clone());
 
 
             let mut i = line.line_number as i32;

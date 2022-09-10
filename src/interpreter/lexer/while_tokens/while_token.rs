@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use crate::interpreter::lexer::methods::MethodHeaderToken;
 use crate::interpreter::models::{BodyExecutor, CodeLine};
 use crate::interpreter::lexer::models::Token;
 use crate::interpreter::lexer::scopes::InnerBodyScope;
@@ -10,12 +11,13 @@ pub struct WhileToken {
     pub header_token: WhileHeaderToken,
     pub scope: Option<InnerBodyScope>,
     pub escape_token_found: bool,
+    pub method_header_token: Option<MethodHeaderToken>,
 
     code_lines: Vec<CodeLine>
 }
 
 impl WhileToken {
-    pub fn evaluate(&self) {
+    pub fn evaluate(&self) -> Option<u32> {
         if let Some(against_zero_variable) = &self.header_token.against_zero_variable {
             if let Some(scope) = &self.scope {
 
@@ -24,10 +26,14 @@ impl WhileToken {
                 };
 
                 while against_zero_variable.evaluate() != 0 {
-                    body_executor.execute();
+                    if let Some(value) = body_executor.execute() {
+                        return Some(value);
+                    }
                 }
             }
         }
+        
+        None
     }
 }
 
@@ -38,10 +44,11 @@ impl Display for WhileToken {
 }
 
 impl WhileToken {
-    pub fn new(header_token: WhileHeaderToken, code_lines: Vec<CodeLine>) -> Self {
+    pub fn new(header_token: WhileHeaderToken, method_header_token: Option<MethodHeaderToken>, code_lines: Vec<CodeLine>) -> Self {
         WhileToken {
             header_token,
             scope: None,
+            method_header_token,
             escape_token_found: false,
             code_lines
         }
@@ -49,7 +56,7 @@ impl WhileToken {
 
     pub fn parse(&mut self, code_line: &CodeLine) -> Option<Token> {
         if self.scope.is_none() {
-            self.scope = Some(InnerBodyScope::new(None, self.code_lines.clone()));
+            self.scope = Some(InnerBodyScope::new(self.method_header_token.clone(), self.code_lines.clone()));
         }
 
         return self.scope.as_mut().unwrap().parse(code_line);

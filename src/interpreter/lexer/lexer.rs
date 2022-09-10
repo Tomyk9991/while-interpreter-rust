@@ -74,7 +74,7 @@ impl Lexer {
 
             if let Some(while_header_token) = token.borrow().to_while_header_token() {
                 let mut removed_while_from_stack = false;
-                let mut while_token = WhileToken::new(while_header_token, code_lines.clone());
+                let mut while_token = WhileToken::new(while_header_token, None,code_lines.clone());
 
                 let mut j = i + 1;
 

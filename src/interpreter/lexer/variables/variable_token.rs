@@ -67,6 +67,9 @@ impl VariableToken {
             return None;
         }
 
+        if assignment_token.is_none() {
+            pseudo_throw(format!("AAAAH, at line: {}", code_line.line))
+        }
         return Some(VariableToken {
             name: name_token.unwrap(),
             assignment: assignment_token.unwrap()

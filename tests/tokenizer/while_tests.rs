@@ -33,7 +33,7 @@ fn simple_while() {
                 let while_header_token = WhileHeaderToken {
                     against_zero_variable: Some(NameToken::new("a"))
                 };
-                let mut while_token = WhileToken::new(while_header_token, vec![]);
+                let mut while_token = WhileToken::new(while_header_token, None,vec![]);
                 while_token.scope = Some(InnerBodyScope::new(None, vec![]));
                 while_token.scope.as_mut().unwrap().stack.push(
                     Stackable::AdditiveOperatorToken {
@@ -54,7 +54,7 @@ fn simple_while() {
                 let while_header_token = WhileHeaderToken {
                     against_zero_variable: Some(NameToken::new("a"))
                 };
-                let mut while_token = WhileToken::new(while_header_token, vec![]);
+                let mut while_token = WhileToken::new(while_header_token, None,vec![]);
                 while_token.scope = Some(InnerBodyScope::new(None, vec![]));
                 while_token.scope.as_mut().unwrap().stack.push(
                     Stackable::AdditiveOperatorToken {

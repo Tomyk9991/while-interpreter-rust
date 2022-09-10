@@ -19,7 +19,10 @@ impl BodyExecutor {
                     value.evaluate();
                 }
                 Stackable::WhileToken { value } => {
-                    value.evaluate();
+                    let option = value.evaluate();
+                    if option.is_some() {
+                        return option;
+                    }
                 }
                 Stackable::ReturnToken { value } => {
                     return Some(value.return_value.as_ref().unwrap().evaluate());
